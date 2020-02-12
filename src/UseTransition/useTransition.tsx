@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
-import { useTransition, useTimingTransition, useSpringTransition } from "react-native-redash";
+import { useTransition, useTimingTransition, useSpringTransition, interpolateColor } from "react-native-redash";
 
 import { Button, Card, StyleGuide, cards } from "../components";
 
@@ -23,9 +23,14 @@ const styles = StyleSheet.create({
 export default () => {
   const [toggled, setToggled] = useState<0 | 1>(0)
 
-  const transition = useTransition(toggled, { duration: 200 });
+  const transition = useTransition(toggled, { duration: 500 });
+
+  const color = interpolateColor(transition, {
+    inputRange: [0, 1],
+    outputRange: ["red", "yellow"]
+  });
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { backgroundColor: color }]}>
       {cards.map((card, index) => {
         const direction = interpolate(index, {
           inputRange: [0, 5],
@@ -63,6 +68,6 @@ export default () => {
         );
       })}
       <Button label={toggled ? "Reset" : "Start"} primary onPress={() => setToggled(toggled ^ 1)} />
-    </View >
+    </Animated.View >
   );
 };

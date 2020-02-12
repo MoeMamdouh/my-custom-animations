@@ -150,6 +150,10 @@ const AppNavigator = createAppContainer(
 export default () => (
   <LoadAssets {...{ fonts, assets }}>
     <StatusBar barStyle="light-content" />
-    <AppNavigator />
+    {/* <AppNavigator /> */}
+    {/* <UseTransition /> */}
+    {/* <DarkMode /> */}
+    {/* <Transitions /> */}
+    <DarkMode />
   </LoadAssets>
 );

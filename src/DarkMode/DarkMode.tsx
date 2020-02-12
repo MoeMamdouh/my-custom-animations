@@ -1,13 +1,15 @@
 import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import {
+import Animated, {
   Transition,
   Transitioning,
   TransitioningView
 } from "react-native-reanimated";
-import { Button, Text } from "../components";
 
+
+import { Button, Text } from "../components";
+import { useTransition, useTimingTransition, useSpringTransition, interpolateColor } from "react-native-redash";
 import Switch from "./Switch";
 import ProfilePic from "./ProfilePic";
 import SocialMediaIcons from "./SocialMediaIcons";
@@ -29,7 +31,7 @@ const styles = StyleSheet.create({
   },
   darkMask: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "black"
+    // backgroundColor: "black"
   },
   text: {
     textAlign: "center"
@@ -37,18 +39,20 @@ const styles = StyleSheet.create({
 });
 
 export default () => {
-  const [dark, setDark] = useState(false);
-  const ref = useRef<TransitioningView>(null);
+  const [dark, setDark] = useState<0 | 1>(0)
+  const transition = useTransition(dark, { duration: 500 });
+  const backgroundColor = interpolateColor(transition, {
+    inputRange: [0, 1],
+    outputRange: ["white", "black"]
+  });
+
   return (
-    <Transitioning.View style={styles.container} {...{ ref, transition }}>
-      {dark && <View style={styles.darkMask} />}
+    <View style={styles.container} >
+      <Animated.View style={[styles.darkMask, { backgroundColor }]} />
       <Switch
-        value={dark}
+        value={Boolean(dark)}
         onValueChange={value => {
-          if (ref.current) {
-            ref.current.animateNextTransition();
-          }
-          setDark(value);
+          setDark(Number(value));
         }}
       />
       <ProfilePic />
@@ -66,6 +70,6 @@ export default () => {
         When speaking of animations, the key to success is to avoid frame drops
       </Text>
       <Button label="Follow" primary onPress={() => true} />
-    </Transitioning.View>
+    </View>
   );
 };

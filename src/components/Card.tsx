@@ -21,7 +21,19 @@ export const cards: Card[] = [
   {
     id: 2,
     source: require("../../assets/examples/card3.png")
-  }
+  },
+  {
+    id: 3,
+    source: require("../../assets/examples/card3.png")
+  },
+  {
+    id: 4,
+    source: require("../../assets/examples/card3.png")
+  },
+  {
+    id: 5,
+    source: require("../../assets/examples/card3.png")
+  },
 ];
 
 const { width } = Dimensions.get("window");

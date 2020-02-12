@@ -28,8 +28,8 @@ export default () => {
     <View style={styles.container}>
       {cards.map((card, index) => {
         const direction = interpolate(index, {
-          inputRange: [0, 1, 2],
-          outputRange: [-1, 0, 1]
+          inputRange: [0, 5],
+          outputRange: [-1, 1]
 
         })
 
@@ -50,7 +50,7 @@ export default () => {
         return (
           <Animated.View key={card.id} style={[styles.overlay, {
             transform: [
-              { translateY: transformOrigin },
+              { translateX: transformOrigin },
               // { translateX: transformOrigin },
               { rotate },
               { scale },

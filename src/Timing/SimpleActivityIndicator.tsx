@@ -32,15 +32,34 @@ const styles = StyleSheet.create({
   }
 });
 
-interface SimpleActivityIndicatorProps {}
+interface SimpleActivityIndicatorProps {
+  progress: Animated.Value<number>;
+}
 
-export default () => {
-  const bubbles = [0, 1, 2];
+export default ({ progress, bubbles }: SimpleActivityIndicatorProps) => {
+  const delta = 2 / bubbles.length;
   return (
     <View style={styles.root}>
       <View style={styles.container}>
         {bubbles.map(i => {
-          return <View key={i} style={styles.bubble} />;
+          const start = i * delta;
+          const end = start + delta;
+          const opacity = interpolate(progress, {
+            inputRange: [start, end],
+            outputRange: [0.5, 1],
+            extrapolate: Extrapolate.CLAMP
+          });
+          const scale = interpolate(progress, {
+            inputRange: [start, end],
+            outputRange: [1, 1.5],
+            extrapolate: Extrapolate.CLAMP
+          });
+          return (
+            <Animated.View
+              key={i}
+              style={[styles.bubble, { opacity, transform: [{ scale }] }]}
+            />
+          );
         })}
       </View>
     </View>

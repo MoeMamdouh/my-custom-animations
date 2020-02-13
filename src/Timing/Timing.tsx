@@ -18,7 +18,8 @@ const {
   stopClock,
   clockRunning,
   and,
-  not
+  not,
+  timing
 } = Animated;
 
 const styles = StyleSheet.create({
@@ -29,10 +30,35 @@ const styles = StyleSheet.create({
   }
 });
 
+const runTiming = (clock: Animated.Clock): Animated.Node<number> => {
+  const state: Animated.TimingState = {
+    finished: new Value(0),
+    position: new Value(0),
+    frameTime: new Value(0),
+    time: new Value(0),
+  };
+  const config = {
+    toValue: new Value(2),
+    duration: 2000,
+    easing: Easing.linear
+  };
+  return block([
+    startClock(clock),
+    timing(clock, state, config),
+    state.position
+  ])
+};
+
 export default () => {
+  const progress = new Value(0)
+  const clock = new Clock()
+  useCode(
+    () => block([set(progress, runTiming(clock))]), []
+  );
+  console.log('progress ', progress)
   return (
     <View style={styles.container}>
-      <SimpleActivityIndicator />
+      <SimpleActivityIndicator {...{ progress }} bubbles={[0, 1, 2, 3, 4, 5]} />
     </View>
   );
 };

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
-import { loop } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
-
 import SimpleActivityIndicator from "./SimpleActivityIndicator";
 import { Button, StyleGuide } from "../components";
 
@@ -40,12 +38,20 @@ const runTiming = (clock: Animated.Clock): Animated.Node<number> => {
   };
   const config = {
     toValue: new Value(1),
-    duration: 1000,
+    duration: 4000,
     easing: Easing.linear
   };
   return block([
-    cond(not(clockRunning(clock)), startClock(clock)),
-    timing(clock, state, config),
+    // startClock(clock),
+    // cond(not(clockRunning(clock)), startClock(clock)),
+    // timing(clock, state, config),
+
+    cond(
+      not(clockRunning(clock)),
+      set(state.time, 0),
+      timing(clock, state, config)
+    ),
+
     cond(eq(state.finished, 1), [
       set(state.finished, 0),
       set(state.frameTime, 0),
@@ -57,15 +63,36 @@ const runTiming = (clock: Animated.Clock): Animated.Node<number> => {
 };
 
 export default () => {
-  const progress = new Value(0)
-  const clock = new Clock()
-  useCode(
-    () => block([set(progress, runTiming(clock))]), []
+
+  const [play, setPlay] = useState(true);
+  const { clock, progress, isPlaying } = useMemoOne(
+    () => ({
+      progress: new Value(0),
+      clock: new Clock(),
+      isPlaying: new Value(0),
+    }),
+    []
   );
-  console.log('progress ', progress)
+  isPlaying.setValue(play ? 1 : 0);
+  useCode(
+    () => block([
+      // cond(and(eq(isPlaying, 0), clockRunning(clock)), stopClock(clock)),
+      // cond(and(eq(isPlaying, 1), not(clockRunning(clock))), startClock(clock)),
+      // set(progress, runTiming(clock)),
+      cond(eq(isPlaying, 0), stopClock(clock)),
+      cond(eq(isPlaying, 1), startClock(clock)),
+      set(progress, runTiming(clock)),
+    ]), []
+  );
+
   return (
     <View style={styles.container}>
       <SimpleActivityIndicator {...{ progress }} bubbles={[0, 1, 2, 3]} />
+      <Button
+        label={play ? "Pause" : "Play"}
+        primary
+        onPress={() => setPlay(!play)}
+      />
     </View>
   );
 };

@@ -19,7 +19,8 @@ const {
   clockRunning,
   and,
   not,
-  timing
+  timing,
+  eq
 } = Animated;
 
 const styles = StyleSheet.create({
@@ -38,13 +39,19 @@ const runTiming = (clock: Animated.Clock): Animated.Node<number> => {
     time: new Value(0),
   };
   const config = {
-    toValue: new Value(2),
-    duration: 2000,
+    toValue: new Value(1),
+    duration: 1000,
     easing: Easing.linear
   };
   return block([
-    startClock(clock),
+    cond(not(clockRunning(clock)), startClock(clock)),
     timing(clock, state, config),
+    cond(eq(state.finished, 1), [
+      set(state.finished, 0),
+      set(state.frameTime, 0),
+      set(state.time, 0),
+      set(config.toValue, cond(eq(state.position, 1), 0, 1))
+    ]),
     state.position
   ])
 };
@@ -58,7 +65,7 @@ export default () => {
   console.log('progress ', progress)
   return (
     <View style={styles.container}>
-      <SimpleActivityIndicator {...{ progress }} bubbles={[0, 1, 2, 3, 4, 5]} />
+      <SimpleActivityIndicator {...{ progress }} bubbles={[0, 1, 2, 3]} />
     </View>
   );
 };

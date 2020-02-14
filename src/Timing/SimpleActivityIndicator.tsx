@@ -37,7 +37,7 @@ interface SimpleActivityIndicatorProps {
 }
 
 export default ({ progress, bubbles }: SimpleActivityIndicatorProps) => {
-  const delta = 2 / bubbles.length;
+  const delta = 1 / bubbles.length;
   return (
     <View style={styles.root}>
       <View style={styles.container}>
